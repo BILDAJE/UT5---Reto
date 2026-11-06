@@ -11,7 +11,7 @@ public interface AlumnoService {
 
     /**
      * Obtiene todos los alumnos.
-     * @return lista de alumnos
+     * @return lista de alumnos	
      */
     List<Alumno> listarAlumnos();
 

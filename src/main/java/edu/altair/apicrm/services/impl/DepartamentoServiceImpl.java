@@ -1,10 +1,12 @@
 package edu.altair.apicrm.services.impl;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
 import edu.altair.apicrm.entities.Departamento;
+import edu.altair.apicrm.exceptions.ResourceNotFoundException;
 import edu.altair.apicrm.repositories.DepartamentoRepository;
 import edu.altair.apicrm.services.DepartamentoService;
 
@@ -35,18 +37,19 @@ public class DepartamentoServiceImpl implements DepartamentoService {
 
     /**
      * Busca un departamento por su identificador.
-     *
      * @param id identificador del departamento
      * @return departamento encontrado
-     * @throws IllegalArgumentException si no existe el departamento
+     * @throws ResourceNotFoundException si no existe el departamento
      */
     @Override
     public Departamento buscarPorId(Long id) {
-        if (departamentoRepository.existsById(id)) {
-            return departamentoRepository.findById(id).get();
+        Optional<Departamento> departamento = departamentoRepository.findById(id);
+
+        if (departamento.isPresent()) {
+            return departamento.get();
         }
 
-        throw new IllegalArgumentException("No existe un departamento con el ID: " + id);
+        throw new ResourceNotFoundException("No existe un departamento con el ID: " + id);
     }
 
     /**
@@ -69,8 +72,10 @@ public class DepartamentoServiceImpl implements DepartamentoService {
     public Departamento actualizarDepartamento(Long id, Departamento departamento) {
         Departamento departamentoExistente = buscarPorId(id);
 
+        departamentoExistente.setCodigo(departamento.getCodigo());
         departamentoExistente.setNombre(departamento.getNombre());
         departamentoExistente.setDescripcion(departamento.getDescripcion());
+        departamentoExistente.setTelefono(departamento.getTelefono());
 
         return departamentoRepository.save(departamentoExistente);
     }

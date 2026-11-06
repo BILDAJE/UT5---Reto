@@ -1,4 +1,3 @@
-
 package edu.altair.apicrm.entities;
 
 import java.util.HashSet;
@@ -13,12 +12,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 /**
- * Entidad que representa un módulo formativo del centro educativo.
- * @author Ilde
+ * Entidad que representa un módulo del centro educativo.
  */
 @Entity
 @Table(name = "modulos")
@@ -29,30 +26,34 @@ public class Modulo {
     @Column(name = "id_modulo")
     private Long idModulo;
 
-    @Column(name = "codigo", nullable = false, unique = true, length = 20)
+    @Column(nullable = false, unique = true, length = 20)
     private String codigo;
 
-    @Column(name = "nombre", nullable = false, length = 100)
+    @Column(nullable = false, unique = true, length = 20)
+    private String diminutivo;
+
+    @Column(length = 100)
     private String nombre;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @Column(length = 255)
+    private String descripcion;
+
+    @Column(name = "horas_semanales")
+    private Integer horasSemanales;
+
+    @Column(name = "creditos")
+    private Integer creditos;
+
+    @ManyToMany(mappedBy = "modulos", fetch = FetchType.LAZY)
+    private Set<Profesor> profesores = new HashSet<>();
+
+    @ManyToMany
     @JoinTable(
-        name = "modulos_cursos",
+        name = "curso_modulo",
         joinColumns = @JoinColumn(name = "id_modulo"),
         inverseJoinColumns = @JoinColumn(name = "id_curso")
     )
     private Set<Curso> cursos = new HashSet<>();
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-        name = "imparte",
-        joinColumns = @JoinColumn(name = "id_modulo"),
-        inverseJoinColumns = @JoinColumn(name = "id_profesor")
-    )
-    private Set<Profesor> profesores = new HashSet<>();
-
-    @OneToMany(mappedBy = "modulo", fetch = FetchType.LAZY)
-    private Set<Matricula> matriculas = new HashSet<>();
 
     /**
      * Constructor vacío requerido por JPA.
@@ -62,12 +63,22 @@ public class Modulo {
 
     /**
      * Constructor para crear un módulo.
-     * @param codigo código identificativo del módulo
+     *
+     * @param codigo código del módulo
+     * @param diminutivo diminutivo del módulo
      * @param nombre nombre del módulo
+     * @param descripcion descripción del módulo
+     * @param horasSemanales número de horas semanales
+     * @param creditos número de créditos
      */
-    public Modulo(String codigo, String nombre) {
+    public Modulo(String codigo, String diminutivo, String nombre,
+            String descripcion, Integer horasSemanales, Integer creditos) {
         this.codigo = codigo;
+        this.diminutivo = diminutivo;
         this.nombre = nombre;
+        this.descripcion = descripcion;
+        this.horasSemanales = horasSemanales;
+        this.creditos = creditos;
     }
 
     /**
@@ -103,6 +114,22 @@ public class Modulo {
     }
 
     /**
+     * Obtiene el diminutivo del módulo.
+     * @return diminutivo del módulo
+     */
+    public String getDiminutivo() {
+        return diminutivo;
+    }
+
+    /**
+     * Establece el diminutivo del módulo.
+     * @param diminutivo diminutivo del módulo
+     */
+    public void setDiminutivo(String diminutivo) {
+        this.diminutivo = diminutivo;
+    }
+
+    /**
      * Obtiene el nombre del módulo.
      * @return nombre del módulo
      */
@@ -119,19 +146,51 @@ public class Modulo {
     }
 
     /**
-     * Obtiene los cursos asociados al módulo.
-     * @return conjunto de cursos
+     * Obtiene la descripción del módulo.
+     * @return descripción del módulo
      */
-    public Set<Curso> getCursos() {
-        return cursos;
+    public String getDescripcion() {
+        return descripcion;
     }
 
     /**
-     * Establece los cursos asociados al módulo.
-     * @param cursos conjunto de cursos
+     * Establece la descripción del módulo.
+     * @param descripcion descripción del módulo
      */
-    public void setCursos(Set<Curso> cursos) {
-        this.cursos = cursos;
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    /**
+     * Obtiene las horas semanales del módulo.
+     * @return número de horas semanales
+     */
+    public Integer getHorasSemanales() {
+        return horasSemanales;
+    }
+
+    /**
+     * Establece las horas semanales del módulo.
+     * @param horasSemanales número de horas semanales
+     */
+    public void setHorasSemanales(Integer horasSemanales) {
+        this.horasSemanales = horasSemanales;
+    }
+
+    /**
+     * Obtiene los créditos del módulo.
+     * @return número de créditos
+     */
+    public Integer getCreditos() {
+        return creditos;
+    }
+
+    /**
+     * Establece los créditos del módulo.
+     * @param creditos número de créditos
+     */
+    public void setCreditos(Integer creditos) {
+        this.creditos = creditos;
     }
 
     /**
@@ -151,18 +210,18 @@ public class Modulo {
     }
 
     /**
-     * Obtiene las matrículas asociadas al módulo.
-     * @return conjunto de matrículas
+     * Obtiene los cursos asociados al módulo.
+     * @return conjunto de cursos
      */
-    public Set<Matricula> getMatriculas() {
-        return matriculas;
+    public Set<Curso> getCursos() {
+        return cursos;
     }
 
     /**
-     * Establece las matrículas asociadas al módulo.
-     * @param matriculas conjunto de matrículas
+     * Establece los cursos asociados al módulo.
+     * @param cursos conjunto de cursos
      */
-    public void setMatriculas(Set<Matricula> matriculas) {
-        this.matriculas = matriculas;
+    public void setCursos(Set<Curso> cursos) {
+        this.cursos = cursos;
     }
 }

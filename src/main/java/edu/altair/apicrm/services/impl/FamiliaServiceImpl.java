@@ -1,10 +1,12 @@
 package edu.altair.apicrm.services.impl;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
 import edu.altair.apicrm.entities.Familia;
+import edu.altair.apicrm.exceptions.ResourceNotFoundException;
 import edu.altair.apicrm.repositories.FamiliaRepository;
 import edu.altair.apicrm.services.FamiliaService;
 
@@ -37,20 +39,21 @@ public class FamiliaServiceImpl implements FamiliaService {
      * Busca una familia por su identificador.
      * @param id identificador de la familia
      * @return familia encontrada
-     * @throws IllegalArgumentException si no existe la familia
+     * @throws ResourceNotFoundException si no existe la familia
      */
     @Override
     public Familia buscarPorId(Long id) {
-        if (familiaRepository.existsById(id)) {
-            return familiaRepository.findById(id).get();
+        Optional<Familia> familia = familiaRepository.findById(id);
+
+        if (familia.isPresent()) {
+            return familia.get();
         }
 
-        throw new IllegalArgumentException("No existe una familia con el ID: " + id);
+        throw new ResourceNotFoundException("No existe una familia con el ID: " + id);
     }
 
     /**
      * Guarda una nueva familia.
-     *
      * @param familia familia que se desea guardar
      * @return familia guardada
      */

@@ -1,10 +1,12 @@
 package edu.altair.apicrm.services.impl;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
 import edu.altair.apicrm.entities.Modulo;
+import edu.altair.apicrm.exceptions.ResourceNotFoundException;
 import edu.altair.apicrm.repositories.ModuloRepository;
 import edu.altair.apicrm.services.ModuloService;
 
@@ -37,15 +39,17 @@ public class ModuloServiceImpl implements ModuloService {
      * Busca un módulo por su identificador.
      * @param id identificador del módulo
      * @return módulo encontrado
-     * @throws IllegalArgumentException si no existe el módulo
+     * @throws ResourceNotFoundException si no existe el módulo
      */
     @Override
     public Modulo buscarPorId(Long id) {
-        if (moduloRepository.existsById(id)) {
-            return moduloRepository.findById(id).get();
+        Optional<Modulo> modulo = moduloRepository.findById(id);
+
+        if (modulo.isPresent()) {
+            return modulo.get();
         }
 
-        throw new IllegalArgumentException("No existe un módulo con el ID: " + id);
+        throw new ResourceNotFoundException("No existe un módulo con el ID: " + id);
     }
 
     /**
@@ -69,7 +73,13 @@ public class ModuloServiceImpl implements ModuloService {
         Modulo moduloExistente = buscarPorId(id);
 
         moduloExistente.setCodigo(modulo.getCodigo());
+        moduloExistente.setDiminutivo(modulo.getDiminutivo());
         moduloExistente.setNombre(modulo.getNombre());
+        moduloExistente.setDescripcion(modulo.getDescripcion());
+        moduloExistente.setHorasSemanales(modulo.getHorasSemanales());
+        moduloExistente.setCreditos(modulo.getCreditos());
+        moduloExistente.setProfesores(modulo.getProfesores());
+        moduloExistente.setCursos(modulo.getCursos());
 
         return moduloRepository.save(moduloExistente);
     }

@@ -1,10 +1,12 @@
 package edu.altair.apicrm.services.impl;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
 import edu.altair.apicrm.entities.Alumno;
+import edu.altair.apicrm.exceptions.ResourceNotFoundException;
 import edu.altair.apicrm.repositories.AlumnoRepository;
 import edu.altair.apicrm.services.AlumnoService;
 
@@ -37,15 +39,17 @@ public class AlumnoServiceImpl implements AlumnoService {
      * Busca un alumno por su identificador.
      * @param id identificador del alumno
      * @return alumno encontrado
-     * @throws IllegalArgumentException si no existe el alumno
+     * @throws ResourceNotFoundException si no existe el alumno
      */
     @Override
     public Alumno buscarPorId(Long id) {
-        if (alumnoRepository.existsById(id)) {
-            return alumnoRepository.findById(id).get();
+        Optional<Alumno> alumno = alumnoRepository.findById(id);
+
+        if (alumno.isPresent()) {
+            return alumno.get();
         }
 
-        throw new IllegalArgumentException("No existe un alumno con el ID: " + id);
+        throw new ResourceNotFoundException("No existe un alumno con el ID: " + id);
     }
 
     /**
@@ -60,7 +64,6 @@ public class AlumnoServiceImpl implements AlumnoService {
 
     /**
      * Actualiza los datos de un alumno.
-     *
      * @param id identificador del alumno
      * @param alumno nuevos datos del alumno
      * @return alumno actualizado

@@ -1,10 +1,12 @@
 package edu.altair.apicrm.services.impl;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
 import edu.altair.apicrm.entities.Profesor;
+import edu.altair.apicrm.exceptions.ResourceNotFoundException;
 import edu.altair.apicrm.repositories.ProfesorRepository;
 import edu.altair.apicrm.services.ProfesorService;
 
@@ -37,15 +39,17 @@ public class ProfesorServiceImpl implements ProfesorService {
      * Busca un profesor por su identificador.
      * @param id identificador del profesor
      * @return profesor encontrado
-     * @throws IllegalArgumentException si no existe el profesor
+     * @throws ResourceNotFoundException si no existe el profesor
      */
     @Override
     public Profesor buscarPorId(Long id) {
-        if (profesorRepository.existsById(id)) {
-            return profesorRepository.findById(id).get();
+        Optional<Profesor> profesor = profesorRepository.findById(id);
+
+        if (profesor.isPresent()) {
+            return profesor.get();
         }
 
-        throw new IllegalArgumentException("No existe un profesor con el ID: " + id);
+        throw new ResourceNotFoundException("No existe un profesor con el ID: " + id);
     }
 
     /**
@@ -69,7 +73,13 @@ public class ProfesorServiceImpl implements ProfesorService {
         Profesor profesorExistente = buscarPorId(id);
 
         profesorExistente.setNombre(profesor.getNombre());
+        profesorExistente.setApellidos(profesor.getApellidos());
+        profesorExistente.setDni(profesor.getDni());
+        profesorExistente.setEmailCentro(profesor.getEmailCentro());
+        profesorExistente.setEmailPersonal(profesor.getEmailPersonal());
+        profesorExistente.setTelefonoPersonal(profesor.getTelefonoPersonal());
         profesorExistente.setDepartamento(profesor.getDepartamento());
+        profesorExistente.setModulos(profesor.getModulos());
 
         return profesorRepository.save(profesorExistente);
     }

@@ -1,4 +1,3 @@
-
 package edu.altair.apicrm.entities;
 
 import java.util.HashSet;
@@ -15,7 +14,6 @@ import jakarta.persistence.Table;
 
 /**
  * Entidad que representa un departamento del centro educativo.
- * @author Ilde
  */
 @Entity
 @Table(name = "departamentos")
@@ -26,29 +24,40 @@ public class Departamento {
     @Column(name = "id_departamento")
     private Long idDepartamento;
 
-    @Column(name = "nombre", nullable = false, length = 100)
+    @Column(nullable = false, unique = true, length = 20)
+    private String codigo;
+
+    @Column(nullable = false, length = 100)
     private String nombre;
 
-    @Column(name = "descripcion", length = 255)
+    @Column(length = 255)
     private String descripcion;
+
+    @Column(length = 15)
+    private String telefono;
 
     @OneToMany(mappedBy = "departamento", fetch = FetchType.LAZY)
     private Set<Profesor> profesores = new HashSet<>();
 
     /**
-     * Constructor vacío requerido por JPA.
+     * Constructor vacío de Departamento.
      */
     public Departamento() {
     }
 
     /**
-     * Constructor para crear un departamento.
+     * Constructor de Departamento con sus datos principales.
+     *
+     * @param codigo código del departamento
      * @param nombre nombre del departamento
      * @param descripcion descripción del departamento
+     * @param telefono teléfono del departamento
      */
-    public Departamento(String nombre, String descripcion) {
+    public Departamento(String codigo, String nombre, String descripcion, String telefono) {
+        this.codigo = codigo;
         this.nombre = nombre;
         this.descripcion = descripcion;
+        this.telefono = telefono;
     }
 
     /**
@@ -65,6 +74,22 @@ public class Departamento {
      */
     public void setIdDepartamento(Long idDepartamento) {
         this.idDepartamento = idDepartamento;
+    }
+
+    /**
+     * Obtiene el código del departamento.
+     * @return código del departamento
+     */
+    public String getCodigo() {
+        return codigo;
+    }
+
+    /**
+     * Establece el código del departamento.
+     * @param codigo código del departamento
+     */
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
     }
 
     /**
@@ -97,6 +122,22 @@ public class Departamento {
      */
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
+    }
+
+    /**
+     * Obtiene el teléfono del departamento.
+     * @return teléfono del departamento
+     */
+    public String getTelefono() {
+        return telefono;
+    }
+
+    /**
+     * Establece el teléfono del departamento.
+     * @param telefono teléfono del departamento
+     */
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
     }
 
     /**

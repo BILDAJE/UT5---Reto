@@ -26,22 +26,22 @@ public class Familia {
     @Column(name = "id_familia")
     private Long idFamilia;
 
-    @Column(name = "nombre_padre", length = 45)
+    @Column(name = "nombre_padre", length = 100)
     private String nombrePadre;
 
-    @Column(name = "nombre_madre", length = 45)
+    @Column(name = "nombre_madre", length = 100)
     private String nombreMadre;
 
-    @Column(name = "apellidos_padre", length = 100)
+    @Column(name = "apellidos_padre", length = 150)
     private String apellidosPadre;
 
-    @Column(name = "apellidos_madre", length = 100)
+    @Column(name = "apellidos_madre", length = 150)
     private String apellidosMadre;
 
-    @Column(name = "email_padre", length = 100)
+    @Column(name = "email_padre", length = 150)
     private String emailPadre;
 
-    @Column(name = "email_madre", length = 100)
+    @Column(name = "email_madre", length = 150)
     private String emailMadre;
 
     @Column(name = "telefono_padre", length = 15)
@@ -50,10 +50,10 @@ public class Familia {
     @Column(name = "telefono_madre", length = 15)
     private String telefonoMadre;
 
-    @Column(name = "direccion_padre", length = 150)
+    @Column(name = "direccion_padre", length = 200)
     private String direccionPadre;
 
-    @Column(name = "direccion_madre", length = 150)
+    @Column(name = "direccion_madre", length = 200)
     private String direccionMadre;
 
     @Column(name = "codigo_postal_padre", length = 10)

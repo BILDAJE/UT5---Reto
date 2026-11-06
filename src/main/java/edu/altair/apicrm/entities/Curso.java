@@ -1,4 +1,3 @@
-
 package edu.altair.apicrm.entities;
 
 import java.util.HashSet;
@@ -10,15 +9,13 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinTable;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 
 /**
  * Entidad que representa un curso del centro educativo.
- * @author Ilde
  */
 @Entity
 @Table(name = "cursos")
@@ -29,17 +26,11 @@ public class Curso {
     @Column(name = "id_curso")
     private Long idCurso;
 
-    @Column(name = "diminutivo", nullable = false, unique = true, length = 20)
+    @Column(nullable = false, unique = true, length = 20)
     private String diminutivo;
 
-    @Column(name = "descripcion", length = 255)
+    @Column(length = 255)
     private String descripcion;
-
-    @Column(name = "horas_semanales")
-    private Integer horasSemanales;
-
-    @Column(name = "creditos")
-    private Integer creditos;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_titulacion")
@@ -57,18 +48,13 @@ public class Curso {
     /**
      * Constructor para crear un curso.
      *
-     * @param diminutivo abreviatura del curso
+     * @param diminutivo diminutivo del curso
      * @param descripcion descripción del curso
-     * @param horasSemanales número de horas semanales
-     * @param creditos número de créditos
      * @param titulacion titulación a la que pertenece
      */
-    public Curso(String diminutivo, String descripcion, Integer horasSemanales,
-            Integer creditos, Titulacion titulacion) {
+    public Curso(String diminutivo, String descripcion, Titulacion titulacion) {
         this.diminutivo = diminutivo;
         this.descripcion = descripcion;
-        this.horasSemanales = horasSemanales;
-        this.creditos = creditos;
         this.titulacion = titulacion;
     }
 
@@ -118,38 +104,6 @@ public class Curso {
      */
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
-    }
-
-    /**
-     * Obtiene las horas semanales del curso.
-     * @return número de horas semanales
-     */
-    public Integer getHorasSemanales() {
-        return horasSemanales;
-    }
-
-    /**
-     * Establece las horas semanales del curso.
-     * @param horasSemanales número de horas semanales
-     */
-    public void setHorasSemanales(Integer horasSemanales) {
-        this.horasSemanales = horasSemanales;
-    }
-
-    /**
-     * Obtiene los créditos del curso.
-     * @return número de créditos
-     */
-    public Integer getCreditos() {
-        return creditos;
-    }
-
-    /**
-     * Establece los créditos del curso.
-     * @param creditos número de créditos
-     */
-    public void setCreditos(Integer creditos) {
-        this.creditos = creditos;
     }
 
     /**

@@ -1,10 +1,12 @@
 package edu.altair.apicrm.services.impl;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
 import edu.altair.apicrm.entities.Estado;
+import edu.altair.apicrm.exceptions.ResourceNotFoundException;
 import edu.altair.apicrm.repositories.EstadoRepository;
 import edu.altair.apicrm.services.EstadoService;
 
@@ -37,15 +39,17 @@ public class EstadoServiceImpl implements EstadoService {
      * Busca un estado por su identificador.
      * @param id identificador del estado
      * @return estado encontrado
-     * @throws IllegalArgumentException si no existe el estado
+     * @throws ResourceNotFoundException si no existe el estado
      */
     @Override
     public Estado buscarPorId(Long id) {
-        if (estadoRepository.existsById(id)) {
-            return estadoRepository.findById(id).get();
+        Optional<Estado> estado = estadoRepository.findById(id);
+
+        if (estado.isPresent()) {
+            return estado.get();
         }
 
-        throw new IllegalArgumentException("No existe un estado con el ID: " + id);
+        throw new ResourceNotFoundException("No existe un estado con el ID: " + id);
     }
 
     /**

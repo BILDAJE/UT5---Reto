@@ -1,10 +1,12 @@
 package edu.altair.apicrm.services.impl;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
 import edu.altair.apicrm.entities.Curso;
+import edu.altair.apicrm.exceptions.ResourceNotFoundException;
 import edu.altair.apicrm.repositories.CursoRepository;
 import edu.altair.apicrm.services.CursoService;
 
@@ -26,7 +28,6 @@ public class CursoServiceImpl implements CursoService {
 
     /**
      * Obtiene todos los cursos.
-
      * @return lista de cursos
      */
     @Override
@@ -38,15 +39,17 @@ public class CursoServiceImpl implements CursoService {
      * Busca un curso por su identificador.
      * @param id identificador del curso
      * @return curso encontrado
-     * @throws IllegalArgumentException si no existe el curso
+     * @throws ResourceNotFoundException si no existe el curso
      */
     @Override
     public Curso buscarPorId(Long id) {
-        if (cursoRepository.existsById(id)) {
-            return cursoRepository.findById(id).get();
+        Optional<Curso> curso = cursoRepository.findById(id);
+
+        if (curso.isPresent()) {
+            return curso.get();
         }
 
-        throw new IllegalArgumentException("No existe un curso con el ID: " + id);
+        throw new ResourceNotFoundException("No existe un curso con el ID: " + id);
     }
 
     /**
@@ -71,9 +74,8 @@ public class CursoServiceImpl implements CursoService {
 
         cursoExistente.setDiminutivo(curso.getDiminutivo());
         cursoExistente.setDescripcion(curso.getDescripcion());
-        cursoExistente.setHorasSemanales(curso.getHorasSemanales());
-        cursoExistente.setCreditos(curso.getCreditos());
         cursoExistente.setTitulacion(curso.getTitulacion());
+        cursoExistente.setModulos(curso.getModulos());
 
         return cursoRepository.save(cursoExistente);
     }

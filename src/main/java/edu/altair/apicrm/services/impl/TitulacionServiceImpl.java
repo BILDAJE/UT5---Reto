@@ -1,10 +1,12 @@
 package edu.altair.apicrm.services.impl;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
 import edu.altair.apicrm.entities.Titulacion;
+import edu.altair.apicrm.exceptions.ResourceNotFoundException;
 import edu.altair.apicrm.repositories.TitulacionRepository;
 import edu.altair.apicrm.services.TitulacionService;
 
@@ -37,15 +39,17 @@ public class TitulacionServiceImpl implements TitulacionService {
      * Busca una titulación por su identificador.
      * @param id identificador de la titulación
      * @return titulación encontrada
-     * @throws IllegalArgumentException si no existe la titulación
+     * @throws ResourceNotFoundException si no existe la titulación
      */
     @Override
     public Titulacion buscarPorId(Long id) {
-        if (titulacionRepository.existsById(id)) {
-            return titulacionRepository.findById(id).get();
+        Optional<Titulacion> titulacion = titulacionRepository.findById(id);
+
+        if (titulacion.isPresent()) {
+            return titulacion.get();
         }
 
-        throw new IllegalArgumentException("No existe una titulación con el ID: " + id);
+        throw new ResourceNotFoundException("No existe una titulación con el ID: " + id);
     }
 
     /**

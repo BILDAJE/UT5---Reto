@@ -1,10 +1,12 @@
 package edu.altair.apicrm.services.impl;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
 import edu.altair.apicrm.entities.Matricula;
+import edu.altair.apicrm.exceptions.ResourceNotFoundException;
 import edu.altair.apicrm.repositories.MatriculaRepository;
 import edu.altair.apicrm.services.MatriculaService;
 
@@ -37,15 +39,17 @@ public class MatriculaServiceImpl implements MatriculaService {
      * Busca una matrícula por su identificador.
      * @param id identificador de la matrícula
      * @return matrícula encontrada
-     * @throws IllegalArgumentException si no existe la matrícula
+     * @throws ResourceNotFoundException si no existe la matrícula
      */
     @Override
     public Matricula buscarPorId(Long id) {
-        if (matriculaRepository.existsById(id)) {
-            return matriculaRepository.findById(id).get();
+        Optional<Matricula> matricula = matriculaRepository.findById(id);
+
+        if (matricula.isPresent()) {
+            return matricula.get();
         }
 
-        throw new IllegalArgumentException("No existe una matrícula con el ID: " + id);
+        throw new ResourceNotFoundException("No existe una matrícula con el ID: " + id);
     }
 
     /**

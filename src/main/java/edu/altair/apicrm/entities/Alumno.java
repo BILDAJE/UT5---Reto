@@ -1,4 +1,3 @@
-
 package edu.altair.apicrm.entities;
 
 import java.time.LocalDate;
@@ -18,7 +17,6 @@ import jakarta.persistence.Table;
 
 /**
  * Entidad que representa a un alumno del centro educativo.
- * @author Ilde
  */
 @Entity
 @Table(name = "alumnos")
@@ -29,19 +27,19 @@ public class Alumno {
     @Column(name = "id_alumno")
     private Long idAlumno;
 
-    @Column(name = "nombre", nullable = false, length = 45)
+    @Column(name = "nombre", nullable = false, length = 100)
     private String nombre;
 
-    @Column(name = "apellidos", nullable = false, length = 100)
+    @Column(name = "apellidos", nullable = false, length = 150)
     private String apellidos;
 
-    @Column(name = "dni", unique = true, length = 9)
+    @Column(name = "dni", nullable = false, unique = true, length = 9)
     private String dni;
 
-    @Column(name = "numero_ss", unique = true, length = 12)
+    @Column(name = "numero_ss", unique = true, length = 15)
     private String numeroSs;
 
-    @Column(name = "email_personal", length = 100)
+    @Column(name = "email_personal", length = 150)
     private String emailPersonal;
 
     @Column(name = "telefono_personal", length = 15)
@@ -53,7 +51,7 @@ public class Alumno {
     @Column(name = "fecha_baja")
     private LocalDate fechaBaja;
 
-    @Column(name = "email_centro", length = 100)
+    @Column(name = "email_centro", length = 150)
     private String emailCentro;
 
     @ManyToOne(fetch = FetchType.LAZY)
