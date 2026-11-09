@@ -1,5 +1,7 @@
+
 package edu.altair.apicrm.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -14,8 +16,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import edu.altair.apicrm.dtos.requests.AlumnoRequest;
+import edu.altair.apicrm.dtos.responses.AlumnoResponse;
 import edu.altair.apicrm.entities.Alumno;
+import edu.altair.apicrm.entities.Familia;
 import edu.altair.apicrm.services.AlumnoService;
+import edu.altair.apicrm.services.FamiliaService;
 
 /**
  * Controlador REST para gestionar las operaciones de Alumno.
@@ -25,13 +30,16 @@ import edu.altair.apicrm.services.AlumnoService;
 public class AlumnoController {
 
     private final AlumnoService alumnoService;
+    private final FamiliaService familiaService;
 
     /**
      * Constructor del controlador de alumnos.
      * @param alumnoService servicio de alumnos
+     * @param familiaService servicio de familias
      */
-    public AlumnoController(AlumnoService alumnoService) {
+    public AlumnoController(AlumnoService alumnoService, FamiliaService familiaService) {
         this.alumnoService = alumnoService;
+        this.familiaService = familiaService;
     }
 
     /**
@@ -39,8 +47,16 @@ public class AlumnoController {
      * @return respuesta con la lista de alumnos
      */
     @GetMapping
-    public ResponseEntity<List<Alumno>> listarAlumnos() {
-        return ResponseEntity.ok(alumnoService.listarAlumnos());
+    public ResponseEntity<List<AlumnoResponse>> listarAlumnos() {
+
+        List<Alumno> alumnos = alumnoService.listarAlumnos();
+        List<AlumnoResponse> respuestas = new ArrayList<>();
+
+        for (Alumno alumno : alumnos) {
+            respuestas.add(convertirAResponse(alumno));
+        }
+
+        return ResponseEntity.ok(respuestas);
     }
 
     /**
@@ -49,8 +65,11 @@ public class AlumnoController {
      * @return respuesta con el alumno encontrado
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Alumno> buscarPorId(@PathVariable Long id) {
-        return ResponseEntity.ok(alumnoService.buscarPorId(id));
+    public ResponseEntity<AlumnoResponse> buscarPorId(@PathVariable Long id) {
+
+        Alumno alumno = alumnoService.buscarPorId(id);
+
+        return ResponseEntity.ok(convertirAResponse(alumno));
     }
 
     /**
@@ -59,23 +78,15 @@ public class AlumnoController {
      * @return respuesta con el alumno creado
      */
     @PostMapping
-    public ResponseEntity<Alumno> guardarAlumno(@RequestBody AlumnoRequest alumnoRequest) {
+    public ResponseEntity<AlumnoResponse> guardarAlumno(
+            @RequestBody AlumnoRequest alumnoRequest) {
 
-        Alumno alumno = new Alumno();
-
-        alumno.setNombre(alumnoRequest.getNombre());
-        alumno.setApellidos(alumnoRequest.getApellidos());
-        alumno.setDni(alumnoRequest.getDni());
-        alumno.setNumeroSs(alumnoRequest.getNumeroSs());
-        alumno.setEmailPersonal(alumnoRequest.getEmailPersonal());
-        alumno.setTelefonoPersonal(alumnoRequest.getTelefonoPersonal());
-        alumno.setFechaAlta(alumnoRequest.getFechaAlta());
-        alumno.setFechaBaja(alumnoRequest.getFechaBaja());
-        alumno.setEmailCentro(alumnoRequest.getEmailCentro());
+        Alumno alumno = convertirAEntidad(alumnoRequest);
 
         Alumno alumnoGuardado = alumnoService.guardarAlumno(alumno);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(alumnoGuardado);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(convertirAResponse(alumnoGuardado));
     }
 
     /**
@@ -85,9 +96,36 @@ public class AlumnoController {
      * @return respuesta con el alumno actualizado
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Alumno> actualizarAlumno(
+    public ResponseEntity<AlumnoResponse> actualizarAlumno(
             @PathVariable Long id,
             @RequestBody AlumnoRequest alumnoRequest) {
+
+        Alumno alumno = convertirAEntidad(alumnoRequest);
+
+        Alumno alumnoActualizado = alumnoService.actualizarAlumno(id, alumno);
+
+        return ResponseEntity.ok(convertirAResponse(alumnoActualizado));
+    }
+
+    /**
+     * Elimina un alumno por su identificador.
+     * @param id identificador del alumno
+     * @return respuesta sin contenido
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarAlumno(@PathVariable Long id) {
+
+        alumnoService.eliminarAlumno(id);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Convierte los datos de una petición en una entidad Alumno.
+     * @param alumnoRequest datos recibidos en la petición
+     * @return entidad Alumno
+     */
+    private Alumno convertirAEntidad(AlumnoRequest alumnoRequest) {
 
         Alumno alumno = new Alumno();
 
@@ -101,19 +139,38 @@ public class AlumnoController {
         alumno.setFechaBaja(alumnoRequest.getFechaBaja());
         alumno.setEmailCentro(alumnoRequest.getEmailCentro());
 
-        Alumno alumnoActualizado = alumnoService.actualizarAlumno(id, alumno);
+        if (alumnoRequest.getIdFamilia() != null) {
+            Familia familia = familiaService.buscarPorId(alumnoRequest.getIdFamilia());
+            alumno.setFamilia(familia);
+        }
 
-        return ResponseEntity.ok(alumnoActualizado);
+        return alumno;
     }
 
     /**
-     * Elimina un alumno por su identificador.
-     * @param id identificador del alumno
-     * @return respuesta sin contenido
+     * Convierte una entidad Alumno en un DTO de respuesta.
+     * @param alumno entidad que se desea convertir
+     * @return DTO con los datos del alumno
      */
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminarAlumno(@PathVariable Long id) {
-        alumnoService.eliminarAlumno(id);
-        return ResponseEntity.noContent().build();
+    private AlumnoResponse convertirAResponse(Alumno alumno) {
+
+        AlumnoResponse respuesta = new AlumnoResponse();
+
+        respuesta.setIdAlumno(alumno.getIdAlumno());
+        respuesta.setNombre(alumno.getNombre());
+        respuesta.setApellidos(alumno.getApellidos());
+        respuesta.setDni(alumno.getDni());
+        respuesta.setNumeroSs(alumno.getNumeroSs());
+        respuesta.setEmailPersonal(alumno.getEmailPersonal());
+        respuesta.setTelefonoPersonal(alumno.getTelefonoPersonal());
+        respuesta.setFechaAlta(alumno.getFechaAlta());
+        respuesta.setFechaBaja(alumno.getFechaBaja());
+        respuesta.setEmailCentro(alumno.getEmailCentro());
+
+        if (alumno.getFamilia() != null) {
+            respuesta.setIdFamilia(alumno.getFamilia().getIdFamilia());
+        }
+
+        return respuesta;
     }
 }
